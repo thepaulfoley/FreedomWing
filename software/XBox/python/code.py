@@ -25,37 +25,50 @@ class RollingAverage:
     def average(self):
         return (sum(self.buffer) / self.size)
 
+# this looks to get the analog inputs from the wheelchair joystick 
+# plugged into the freedom wing. so this is getting pin A2
 base = AnalogIn(board.A2)
+# check if swap axes was set in settings.py
 if (not swapAxes):
     hor = AnalogIn(board.A3)
     vert = AnalogIn(board.A4)
 else:
     hor = AnalogIn(board.A4)
     vert = AnalogIn(board.A3)
-
+# check if swap horizontal axis was set in settings.py
 if (not invertHor):
     horDirection=1
 else:
     horDirection=-1
-
+# check if swap vertical axis was set in settings.py
 if (not invertVert):
     vertDirection=1
 else:
     vertDirection=-1
 avgCount = smoothingFactor
 
+# create three rolling averages: base, horizontal and vertical
 baseAvg = RollingAverage(avgCount)
 horAvg = RollingAverage(avgCount)
 vertAvg = RollingAverage(avgCount)
 
+# define a range map function, I think. maybe range map means something specific in Python
 def range_map(value, in_min, in_max, out_min, out_max):
     return int(max(out_min,min(out_max,(value - in_min) * (out_max - out_min) // (in_max - in_min) + out_min)))
 
+# define function to get the voltage of a pin
 def get_voltage(pin):
     return (pin.value)
 baseVal = 0
 
+# loop from 0 to 9, range upper bound not inclusive in python
 for i in range(0,10,1):
+   # base is the AnalogIn structure created above. it is pin A2.
+   # get the voltage, divide by 10 and add to running average
+   # more efficient way would be just do sum in loop and one
+   # divide at the end but not super important as this is just 
+   # initialization code the runs once and is not  in the real-time
+   # loop affecting gameplay
    baseVal += (get_voltage(base))/10.0
    time.sleep(.1)
 
