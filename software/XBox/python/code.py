@@ -10,6 +10,8 @@ from settings import *
 
 
 time.sleep(1.0)
+# gamepad must represent the output from the freedom wing. by default 
+# the output being the connection to the XAC
 gp = Gamepad()
 
 class RollingAverage:
@@ -70,16 +72,24 @@ for i in range(0,10,1):
    # initialization code the runs once and is not  in the real-time
    # loop affecting gameplay
    baseVal += (get_voltage(base))/10.0
+   # sleep between readings. 10 iterations with a 0.1 sleep 
+   # means it will take 1 second 
    time.sleep(.1)
 
 lowVal = -(baseVal / 6)
 highVal = (baseVal / 6)
-
+# value representing the center of the horizontal or vertical axis
+# so I guess maybe by default a 9 pin joystick can detect 256 unique 
+# positions in each access 
 center = 128
+#start as if the joystick is starting in the center
 last_game_x = center
 last_game_y = center
-
+# threshold of how big a change in either axis position has to be to register 
+#a value of 1 here looks like it means any change will be registered 
 game_thresh=1
+# how far from the center do you need to move from the center for it to register 
+# essentially this controls the size of the deadzone
 middleLimit = 10
 
 gp.reset_all()
